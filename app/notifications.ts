@@ -1,5 +1,7 @@
 'use client';
 
+import { getUserId } from './models';
+
 const applicationServerKey =
   'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDzkrxZJjSgSnfckjBJuBkr3qBUYIHBQFLXYp5Nksh8U';
 
@@ -27,9 +29,30 @@ export async function register() {
   }
 }
 
+export async function unregister() {
+  const subscription = await checkSubscription();
+  await subscription?.unsubscribe();
+
+  return fetch('/api/register', {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      userid: getUserId(),
+    },
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error('Bad status code from server.');
+      }
+      return response.json();
+    })
+    .then((responseData) => {
+      console.log(responseData);
+    });
+}
+
 export async function checkSubscription() {
   const registration = await getServiceWorkerRegistration();
-
   return getSubscription(registration);
 }
 
@@ -56,9 +79,13 @@ export async function requestPermission() {
   }
 }
 
-export function testNotification() {
+export async function testNotification() {
+  const registration = await getServiceWorkerRegistration();
+  const pushSubscription = await getSubscription(registration);
+
   return fetch('/api/test', {
     method: 'POST',
+    body: JSON.stringify(pushSubscription),
   })
     .then(function (response) {
       if (!response.ok) {
@@ -68,6 +95,7 @@ export function testNotification() {
     })
     .then(function (responseData) {
       console.log(responseData);
+      return responseData;
     });
 }
 
@@ -102,6 +130,7 @@ function saveSubscription(subscription: PushSubscription) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      userid: getUserId(),
     },
     body: JSON.stringify(subscription),
   })

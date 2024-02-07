@@ -12,11 +12,13 @@
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
     "@mui/material": "^5.15.7",
+    "@types/uuid": "^9.0.8",
     "@types/web-push": "^3.6.3",
     "@vercel/kv": "^1.0.1",
     "next": "14.1.0",
     "react": "^18",
     "react-dom": "^18",
+    "uuid": "^9.0.1",
     "web-push": "^3.6.7"
   },
   "devDependencies": {

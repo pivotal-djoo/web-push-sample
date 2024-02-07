@@ -8,6 +8,8 @@ import {
   checkSubscription,
   register,
   requestPermission,
+  testNotification,
+  unregister,
 } from './notifications';
 import { useEffect, useState } from 'react';
 
@@ -22,7 +24,7 @@ export default function Home() {
     checkStatuses();
   }, []);
 
-  async function checkStatuses() {
+  function checkStatuses() {
     requestPermission().then((result) => {
       setNotificationPermission(result);
       setServiceWorkerAvailable('serviceWorker' in navigator);
@@ -89,18 +91,38 @@ export default function Home() {
               <Button
                 variant="contained"
                 style={{ margin: '2rem' }}
-                onClick={register}
+                onClick={async () => {
+                  await register();
+                  checkStatuses();
+                }}
+              >
+                Register
+              </Button>
+
+              <Button
+                variant="contained"
+                style={{ margin: '2rem' }}
+                disabled={!subscribed}
+                onClick={async () => {
+                  await testNotification();
+                  checkStatuses();
+                }}
               >
                 Test
               </Button>
 
-              {/* <Button
-                variant="contained"
-                style={{ margin: '2rem' }}
-                onClick={testNotification}
-              >
-                Test
-              </Button> */}
+              {subscribed && (
+                <Button
+                  variant="contained"
+                  style={{ margin: '2rem' }}
+                  onClick={async () => {
+                    await unregister();
+                    checkStatuses();
+                  }}
+                >
+                  Unregister
+                </Button>
+              )}
             </>
           )}
         </main>
